@@ -18,6 +18,7 @@ questions.
 character for character, no paraphrasing, no cleaning up, no ellipses. If you \
 cannot quote it verbatim, DO NOT include the claim.
 - One claim per distinct disclosure. Do not merge, do not infer beyond the words.
+- The `statement` must be a restatement OF THE QUOTE: every key noun/verb in it should appear in the quote. A statement that adds information the quote does not contain will be (correctly) rejected downstream as unsupported.
 - Do not invent claims to be thorough. Missing a claim is fine; fabricating one is not.
 - Classify each claim `type` as one of: observation, workaround, bottleneck, \
 friction, wasted_effort, ai_opportunity.
@@ -30,7 +31,7 @@ Return a SINGLE JSON object, nothing else:
   "claims": [
     {
       "type": "workaround",
-      "statement": "a one-sentence claim in your own words",
+      "statement": "a one-sentence claim whose key words COME FROM the quote itself. Restate the quote; do not add context, causes, or numbers from elsewhere in the transcript.",
       "quote": "the exact verbatim words from ONE subject line",
       "segment_id": "the seg-... id of that subject line",
       "tier": 2

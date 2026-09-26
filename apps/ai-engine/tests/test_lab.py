@@ -21,6 +21,7 @@ from ai_engine.lab.schemas import (LAB_SCHEMA, Scenario, TurnEvaluation,
 
 def _settings(data_dir: Path) -> Settings:
     return Settings(api_key=None, store_key=None, runtime=Runtime.DEV,
+                            provider="",
                     data_dir=data_dir)
 
 

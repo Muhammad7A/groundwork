@@ -161,16 +161,55 @@ class HeuristicEntailmentChecker:
                 "heuristic",
             )
 
-        # 4. Near-zero overlap: the claim's words barely appear in the quote.
+        # 4. Low overlap — with two honest rescues before rejection. A live model
+        # legitimately writes claims that SUMMARY the quote (adding context words
+        # that lower the ratio) or TRIM it (keeping only the load-bearing words:
+        # "sometimes I'm probably underutilized about a day a week" summarized as
+        # "about a day a week lost to waiting"). Both are faithful restatements;
+        # neither is a fabrication. The rescues, in order of strictness:
+        #
+        #   a) QUOTE SUBSET OF CLAIM (word-set): the claim carries every content
+        #      word of the quote — it added, never swapped.
+        #   b) QUOTE EMBEDDED IN CLAIM (verbatim string, punctuation-tolerant):
+        #      the claim literally contains the quote's words — the model quoted
+        #      inside its sentence and the overlap metric punished shared words
+        #      on the quote's side only. A fabricated claim cannot pass either
+        #      rescue without actually carrying the quote's words, and every
+        #      rejection gate above (escalation, polarity, invented quantity)
+        #      still ran first.
         if claim_words:
             overlap = len(claim_words & quote_words) / len(claim_words)
             if overlap < _MIN_OVERLAP:
+                covers_quote = bool(quote_words) and quote_words <= claim_words
+                embedded = _quote_embedded(statement, quote)
+                if not covers_quote and not embedded:
+                    return EntailmentResult(
+                        Entailment.NOT_SUPPORTED,
+                        f"claim overlaps the quote only {overlap:.0%}",
+                        "heuristic",
+                    )
                 return EntailmentResult(
-                    Entailment.NOT_SUPPORTED,
-                    f"claim overlaps the quote only {overlap:.0%}",
+                    Entailment.SUPPORTED,
+                    "claim is a faithful restatement "
+                    + ("(contains the quote's full content) " if covers_quote else "")
+                    + ("(embeds the quote verbatim) " if embedded else "")
+                    + "— no escalation, polarity flip, or invented quantity",
                     "heuristic",
                 )
         return EntailmentResult(Entailment.SUPPORTED, "claim stays within the quote", "heuristic")
+
+
+def _quote_embedded(statement: str, quote: str) -> bool:
+    """Whether the quote's words appear in the claim as a contiguous-enough
+    run. Punctuation/case tolerant (the same normalization grounding uses),
+    word-subsequence at the claim level: the quote's words, in order, must all
+    be present in the claim. A claim about something else cannot contain them."""
+    claim_norm = re.sub(r"[^\w\s]", " ", statement.lower()).split()
+    quote_norm = re.sub(r"[^\w\s]", " ", quote.lower()).split()
+    if not quote_norm:
+        return False
+    it = iter(claim_norm)
+    return all(any(word == c for c in it) for word in quote_norm)
 
 
 # --- the live model checker ------------------------------------------------

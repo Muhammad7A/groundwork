@@ -1,0 +1,67 @@
+{
+  "schema": "groundwork.transcript/v1",
+  "id": "txn-livefixture0001",
+  "engagement_id": "eng-live-smoke",
+  "tenant_id": "tenant-demo",
+  "interview_id": "P-livefixture01",
+  "created_at": "2026-09-03T04:00:00Z",
+  "finalized": true,
+  "segments": [
+    {
+      "id": "seg-live0000",
+      "sequence": 1,
+      "speaker": "interviewer",
+      "text": "Thanks for making the time — nothing you say gets back to your employer with your name on it. To start, can you walk me through how your work actually gets done day to day?",
+      "uttered_at": "2026-09-03T04:00:00+00:00"
+    },
+    {
+      "id": "seg-live0001",
+      "sequence": 2,
+      "speaker": "subject",
+      "text": "Mostly it's a mix of the official dashboard and, honestly, a lot of informal information channels — if I need something fast I just ask whoever's closest rather than waiting for the system.",
+      "uttered_at": "2026-09-03T04:01:00+00:00"
+    },
+    {
+      "id": "seg-live0002",
+      "sequence": 3,
+      "speaker": "interviewer",
+      "text": "When the official tools or process get in your way, what do you do instead — any workarounds you've built for yourself?",
+      "uttered_at": "2026-09-03T04:02:00+00:00"
+    },
+    {
+      "id": "seg-live0003",
+      "sequence": 4,
+      "speaker": "subject",
+      "text": "There's an informal side channel for the weekly numbers. It definitely gets people the information they need faster in a pinch.",
+      "uttered_at": "2026-09-03T04:03:00+00:00"
+    },
+    {
+      "id": "seg-live0004",
+      "sequence": 5,
+      "speaker": "interviewer",
+      "text": "Where do things most often stall or pile up waiting on someone or something?",
+      "uttered_at": "2026-09-03T04:04:00+00:00"
+    },
+    {
+      "id": "seg-live0005",
+      "sequence": 6,
+      "speaker": "subject",
+      "text": "The official report, when it finally comes out, might have slightly different numbers or a different interpretation than what was shared informally. It can lead to confusion, and I'm doing redundant work, answering the same questions multiple times.",
+      "uttered_at": "2026-09-03T04:05:00+00:00"
+    },
+    {
+      "id": "seg-live0006",
+      "sequence": 7,
+      "speaker": "interviewer",
+      "text": "Was that more about the tools, the process, or a decision someone made? There's no wrong answer — I'm just mapping where the friction sits.",
+      "uttered_at": "2026-09-03T04:06:00+00:00"
+    },
+    {
+      "id": "seg-live0007",
+      "sequence": 8,
+      "speaker": "subject",
+      "text": "Honestly, it also means that sometimes I'm probably underutilized about a day a week, because a lot of my time is spent waiting for things to clear, or dealing with these ad-hoc requests that arise from the delays.",
+      "uttered_at": "2026-09-03T04:07:00+00:00"
+    }
+  ]
+}

@@ -250,6 +250,7 @@ class SurfaceResumeTest(unittest.TestCase):
         self.addCleanup(self._tmp.cleanup)
         self.data_dir = Path(self._tmp.name)
         self.settings = Settings(api_key=None, store_key=None, runtime=Runtime.DEV,
+                            provider="",
                                  data_dir=self.data_dir)
         self.invitations = InvitationStore(self.data_dir)
         self.token = self.invitations.create(pseudonym="P-abc123").token

@@ -26,6 +26,7 @@ def _settings(data_dir: Path, **kw) -> Settings:
     kw.setdefault("api_key", None)
     kw.setdefault("store_key", None)
     kw.setdefault("runtime", Runtime.DEV)
+    kw.setdefault("provider", "")  # hermetic: a developer's live-credential env must not flip tests to live
     return Settings(data_dir=data_dir, **kw)
 
 

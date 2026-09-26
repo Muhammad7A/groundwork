@@ -1,0 +1,32 @@
+{
+  "claims": [
+    {
+      "claim_type": "workaround",
+      "statement": "Asks whoever is closest rather than waiting for the system when something is needed fast.",
+      "quote": "if I need something fast I just ask whoever's closest rather than waiting for the system",
+      "segment_id": "seg-live0001",
+      "tier": 2
+    },
+    {
+      "claim_type": "workaround",
+      "statement": "Maintains an informal side channel for the weekly numbers.",
+      "quote": "There's an informal side channel for the weekly numbers.",
+      "segment_id": "seg-live0003",
+      "tier": 2
+    },
+    {
+      "claim_type": "wasted_effort",
+      "statement": "Answers the same questions multiple times because the informal and official numbers disagree.",
+      "quote": "I'm doing redundant work, answering the same questions multiple times.",
+      "segment_id": "seg-live0005",
+      "tier": 3
+    },
+    {
+      "claim_type": "wasted_effort",
+      "statement": "I'm probably underutilized about a day a week, waiting for things to clear.",
+      "quote": "sometimes I'm probably underutilized about a day a week",
+      "segment_id": "seg-live0007",
+      "tier": 3
+    }
+  ]
+}

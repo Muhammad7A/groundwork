@@ -51,7 +51,7 @@ class WorkspaceFlowTest(unittest.TestCase):
         from ai_engine.webapp.app import create_app
 
         settings = Settings(api_key=None, store_key=None, runtime=Runtime.DEV,
-                            data_dir=self.data_dir)
+                            provider="", data_dir=self.data_dir)
         self.settings = settings
         self.client = TestClient(create_app(settings))
 
@@ -272,7 +272,7 @@ class ProvenanceUXTest(unittest.TestCase):
         from ai_engine.webapp.app import create_app
 
         settings = Settings(api_key=None, store_key=None, runtime=Runtime.DEV,
-                            data_dir=self.data_dir)
+                            provider="", data_dir=self.data_dir)
         self.client = TestClient(create_app(settings))
 
     def _simulated_transcript(self, client) -> str:
@@ -313,7 +313,7 @@ class DemoRunTest(unittest.TestCase):
         from ai_engine.webapp.app import create_app
 
         settings = Settings(api_key=None, store_key=None, runtime=Runtime.DEV,
-                            data_dir=self.data_dir)
+                            provider="", data_dir=self.data_dir)
         self.client = TestClient(create_app(settings))
 
     def test_the_demo_runs_end_to_end_and_lands_on_both_deliverables(self):

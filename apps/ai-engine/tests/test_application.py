@@ -22,7 +22,7 @@ from ai_engine.validation.model import Verdict
 
 def _settings(data_dir: Path, **kw) -> Settings:
     return Settings(api_key=None, store_key=None, runtime=Runtime.DEV,
-                    data_dir=data_dir, **kw)
+                    provider="", data_dir=data_dir, **kw)
 
 
 class InterviewUseCaseTest(unittest.TestCase):

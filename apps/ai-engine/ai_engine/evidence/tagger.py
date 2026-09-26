@@ -71,7 +71,7 @@ class EvidenceTagger:
         text = self._llm.complete(
             system=TAGGER_SYSTEM,
             messages=[{"role": "user", "content": render_tagger_prompt(transcript.render())}],
-            max_tokens=1500,
+            max_tokens=4000,
             temperature=self._temperature,
         )
         return _parse_proposals(text)
@@ -106,6 +106,14 @@ def _classify(low_text: str) -> tuple[str, int]:
 
 
 def _extract_json(text: str) -> dict | None:
+    """Pull the claims JSON out of a model response — including responses the
+    provider TRUNCATED at max_tokens (the live failure mode: a cut mid-object
+    used to parse as None and the tagger silently emitted zero proposals).
+
+    Order: fenced block, then the first balanced object, then a SALVAGE pass
+    that closes truncated strings/brackets and keeps every complete claim —
+    still fail-closed: content that cannot be parsed is dropped, never guessed.
+    """
     fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
     candidate = fenced.group(1) if fenced else None
     if candidate is None:
@@ -113,21 +121,94 @@ def _extract_json(text: str) -> dict | None:
         if start == -1:
             return None
         depth = 0
+        in_string = False
+        escape = False
         for i in range(start, len(text)):
-            if text[i] == "{":
+            ch = text[i]
+            if in_string:
+                if escape:
+                    escape = False
+                elif ch == "\\":
+                    escape = True
+                elif ch == '"':
+                    in_string = False
+                continue
+            if ch == '"':
+                in_string = True
+            elif ch == "{":
                 depth += 1
-            elif text[i] == "}":
+            elif ch == "}":
                 depth -= 1
                 if depth == 0:
                     candidate = text[start : i + 1]
                     break
-    if not candidate:
-        return None
+    unclosed = False
+    if candidate is None:
+        start = text.find("{")
+        if start == -1:
+            return None
+        candidate = text[start:]  # no balanced close anywhere: output was cut
+        unclosed = True
+    parsed = None
     try:
-        parsed = json.loads(candidate)
-        return parsed if isinstance(parsed, dict) else None
+        loaded = json.loads(candidate)
+        parsed = loaded if isinstance(loaded, dict) else None
     except json.JSONDecodeError:
+        parsed = _salvage_truncated(candidate) if unclosed else None
+    return parsed
+
+
+def _salvage_truncated(candidate: str) -> dict | None:
+    """Recover complete claims from JSON cut off at max_tokens.
+
+    Walk the claims array; keep every element that parses fully; drop the
+    partially-written tail element. Fail-closed: anything ambiguous is dropped
+    rather than guessed.
+    """
+    claims_key = '"claims"'
+    key_pos = candidate.find(claims_key)
+    if key_pos == -1:
         return None
+    arr_start = candidate.find("[", key_pos)
+    if arr_start == -1:
+        return None
+    body = candidate[arr_start + 1 :]
+    # strip a trailing partial element: cut back to the last object boundary
+    elements, depth, in_string, escape, start = [], 0, False, False, 0
+    last_complete = -1
+    for i, ch in enumerate(body):
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0 and start is not None:
+                elements.append(body[start : i + 1])
+                last_complete = i
+        # a truncation mid-STRING cannot be detected structurally; the loop
+        # simply ends, and only fully-closed objects are kept.
+    if not elements:
+        return None
+    recovered = {"claims": []}
+    for element in elements:
+        try:
+            item = json.loads(element)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(item, dict) and item.get("quote"):
+            recovered["claims"].append(item)
+    return recovered if recovered["claims"] else None
 
 
 def _parse_proposals(text: str) -> list[RawProposal]:
